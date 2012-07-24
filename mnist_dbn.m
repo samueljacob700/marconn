@@ -11,10 +11,10 @@ nv = size(data,1);
 params.epsw = 0.1;
 params.epsbh = 0.1;
 params.epsbv = 0.1;
-params.nepochs = 10;
+params.nepochs = 200;
 params.batchsize = 100;
 params.initialmomentum = 0.5;
-params.finalmomentum = 0.9;
+params.finalmomentum = 0.5;
 params.weightcost = 0.0002;
 
 % pre-train layer 1
