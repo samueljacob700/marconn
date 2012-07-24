@@ -8,7 +8,7 @@ nv = size(data,1);
 epsw = 0.1;
 epsbh = 0.1;
 epsbv = 0.1;
-nepochs = 10;
+nepochs = 1;
 batchsize = 100;
 
 % pre-train layer 1
