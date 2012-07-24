@@ -7,7 +7,7 @@ epsbh = params.epsbh;
 epsbv = params.epsbv;
 initialmomentum = params.initialmomentum;
 finalmomentum = params.finalmomentum;
-weightcost = params.weightcost;
+weightcost = params.weightcost; % TODO not used
 
 [nv,ndata] = size(data);
 nh = size(bh,1);
@@ -37,17 +37,17 @@ for epoch=1:nepochs
     % E_model (use CD-K approximation)
     % initialize Gibbs chain from data
     h = double(rand(nh,batchsize) < p_h_data); % nh x batchsize
-    hout = p_h_data; % data is probabilities
-    %hout(:,first:last) = h;
+    %hout = p_h_data; % data is probabilities
+    hout(:,first:last) = h;
     %for k=1:CDk
     % sample visible given hidden
     p_v_h = 1./(1+exp(bsxfun(@plus,-w'*h,-bv))); % nv x batchsize
-    v = p_v_h; % TODO using probabilities in place of states
-    %v = double(rand(nv,batchsize) < p_v_h);
+    %v = p_v_h; % TODO using probabilities in place of states
+    v = double(rand(nv,batchsize) < p_v_h);
     % sample hidden given visible TODO use probabilities--mean field(?)
     p_h_v = 1./(1+exp(bsxfun(@plus,-w*v,-bh))); % nh x batchsize
-    h = p_h_v; % TODO using probs in place of states
-    %h = double(rand(nh,batchsize) < p_h_v);
+    %h = p_h_v; % TODO using probs in place of states
+    h = double(rand(nh,batchsize) < p_h_v);
     %end
     Ew_model = (1/batchsize)*(h*v');
     Ebh_model = (1/batchsize)*sum(h,2);
