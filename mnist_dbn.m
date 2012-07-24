@@ -51,29 +51,7 @@ save('dbn.mat','w1','bh1','bv1','w2','bh2','bv2','w3','bh3','bv3','w4','bh4','bv
 % to dream, run alternating gibbs sampling in layer 4 using w4, bh4,
 % hb4. take the resulting h3 vectors and instantiate the hidden layer
 % of layer 3 with h3. sample down to get h2 using w3 and bh3, etc...
-v = data(:,1); % example data input
-h1 = sample_up(v,w1,bh1);
-h2 = sample_up(h1,w2,bh2);
-h3 = sample_up(h2,w3,bh3);
-h4 = sample_up(h3,w4,bh4);
-for j=1:1000
-  %h4 = rand(nh4,1);
-  for i=1:10000
-    h3 = sample_down(h4,w4,bv4);
-    h4 = sample_up(h3,w4,bh4);
-  end
-  h3 = sample_down(h4,w4,bv4);
-  h2 = sample_down(h3,w3,bv3);
-  h1 = sample_down(h2,w2,bv2);
-  v = sample_down(h1,w1,bv1);
-  viewim(v);
-  pause(0.03);
-end
+dream(w4,bv4,w3,bv3,w2,bv2,w1,bv1);
 
-% to percolate an image up into the higher layers, sample upwards
-v = data(:,1); % example data input
-h1 = sample_up(v,w1,bh1);
-h2 = sample_up(h1,w2,bh2);
-h3 = sample_up(h2,w3,bh3);
-h4 = sample_up(h3,w4,bh4);
-
+h4 = encode(data(:,1),w1,w2,w3,w4,bh1,bh2,bh3,bh4);
+v = decode(h4,w1,w2,w3,w4,bv1,bv2,bv3,bv4);
