@@ -11,7 +11,6 @@ nbatch = ndata/batchsize;
 for epoch=1:nepochs
     epoch
     for batch=1:nbatch
-        batch
         first = (batch-1)*batchsize+1;
         last = batch*batchsize;
         batchdata = double(data(:,first:last)); % nv x batchsize
