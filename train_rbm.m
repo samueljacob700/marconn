@@ -1,4 +1,5 @@
-function [w,bh,bv] = train_rbm(w,bh,bv,data,nepochs,batchsize,epsw,epsbh,epsbv)
+function [w,bh,bv,hout] = train_rbm(w,bh,bv,data,nepochs,batchsize,epsw,epsbh,epsbv)
+% hout contains a sample from the final model for each data example
 
 [nv,ndata] = size(data);
 nh = size(bh,1);
@@ -23,21 +24,22 @@ for epoch=1:nepochs
         
         % E_model (use CD-K approximation)
         % initialize Gibbs chain from data
-        h = double(rand(nh,batchsize) < p_h_data); % batchsize x nh
+        h = double(rand(nh,batchsize) < p_h_data); % nh x batchsize
+	hout(:,first:last) = h;
         for k=1:CDk
             % sample visible given hidden
             tmp = -w'*h;
-            p_v_h = 1./(1+exp(bsxfun(@plus,tmp,-bv))); % batchsize x nv
-            v = double(rand(nv,batchsize) < p_v_h); % batchsize x nv
+            p_v_h = 1./(1+exp(bsxfun(@plus,tmp,-bv))); % nv x batchsize
+            v = double(rand(nv,batchsize) < p_v_h);
             % sample hidden given visible TODO use probabilities--mean field(?)
             tmp = -w*v;
-            p_h_v = 1./(1+exp(bsxfun(@plus,tmp,-bh))); % batchsize x nh (TODO reuse above)
-            h = double(rand(nh,batchsize) < p_h_v); % batchsize x nh
+            p_h_v = 1./(1+exp(bsxfun(@plus,tmp,-bh))); % nh x batchsize
+            h = double(rand(nh,batchsize) < p_h_v);
         end
         Ew_model = (1/batchsize)*(h*v');
         Ebh_model = (1/batchsize)*sum(h,2);
         Ebv_model = (1/batchsize)*sum(v,2);
-        
+
         % update
         w = w + epsw*(Ew_data - Ew_model);
         bh = bh + epsbh*(Ebh_data - Ebh_model);
