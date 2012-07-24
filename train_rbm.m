@@ -1,4 +1,4 @@
-function [w,bh,bv,hout] = train_rbm(w,bh,bv,data,nepochs,batchsize,epsw,epsbh,epsbv)
+function [w,bh,bv,hout] = train_rbm(w,bh,bv,data,nepochs,batchsize,epsw,epsbh,epsbv,momentum)
 % hout contains a sample from the final model for each data example
 
 [nv,ndata] = size(data);
@@ -8,12 +8,16 @@ CDk = 1;
 assert(rem(ndata,batchsize) == 0);
 nbatch = ndata/batchsize;
 
+d_w = zeros(nh,nv);
+d_bh = zeros(nh,1);
+d_bv = zeros(nv,1);
+
 for epoch=1:nepochs
     epoch
     for batch=1:nbatch
         first = (batch-1)*batchsize+1;
         last = batch*batchsize;
-        batchdata = double(data(:,first:last)); % nv x batchsize
+        batchdata = data(:,first:last); % nv x batchsize
         
         % E_data (exact)
         p_h_data = 1./(1+exp(bsxfun(@plus,-w*batchdata,-bh))); % nh x batchsize
@@ -40,9 +44,12 @@ for epoch=1:nepochs
         Ebv_model = (1/batchsize)*sum(v,2);
 
         % update
-        w = w + epsw*(Ew_data - Ew_model);
-        bh = bh + epsbh*(Ebh_data - Ebh_model);
-        bv = bv + epsbv*(Ebv_data - Ebv_model);
+	d_w = momentum*d_w + epsw*(Ew_data - Ew_model);
+	d_bh = momentum*d_bh + epsbh*(Ebh_data - Ebh_model);
+	d_bv = momentum*d_bv + epsbv*(Ebv_data - Ebv_model);
+        w = w + d_w;
+        bh = bh + d_bh;
+        bv = bv + d_bv;
         
     end
 end
