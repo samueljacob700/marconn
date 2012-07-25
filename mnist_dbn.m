@@ -52,7 +52,8 @@ save('dbn.mat','w1','bh1','bv1','w2','bh2','bv2','w3','bh3','bv3','w4','bh4','bv
 % to dream, run alternating gibbs sampling in layer 4 using w4, bh4,
 % hb4. take the resulting h3 vectors and instantiate the hidden layer
 % of layer 3 with h3. sample down to get h2 using w3 and bh3, etc...
-dream(w4,bv4,w3,bv3,w2,bv2,w1,bv1);
 
-h4 = encode(data(:,1),w1,w2,w3,w4,bh1,bh2,bh3,bh4);
-v = decode(h4,w1,w2,w3,w4,bv1,bv2,bv3,bv4);
+dream(w4,bh4,bv4,w3,bh3,bv3,w2,bh2,bv2,w1,bh1,bv1);
+
+%h4 = encode(data(:,1),w1,w2,w3,w4,bh1,bh2,bh3,bh4);
+%v = decode(h4,w1,w2,w3,w4,bv1,bv2,bv3,bv4);
