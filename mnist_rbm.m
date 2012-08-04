@@ -25,5 +25,5 @@ nh1 = 500;
 w1 = 0.1*randn(nh1,nv);
 bh1 = zeros(nh1,1);
 bv1 = zeros(nv,1);
-[w1,bh1,bv1] = train_rbm_cd1(w1,bh1,bv1,data,params);
+[w1,bh1,bv1] = train_rbm(w1,bh1,bv1,data,params);
 save('rbm.cd10.500h.1000e','w1','bh1','bv1','params');
