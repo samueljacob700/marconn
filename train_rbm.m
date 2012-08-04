@@ -1,4 +1,5 @@
 function [w,bh,bv,hout] = train_rbm(w,bh,bv,data,params)
+% train an RBM with binary visible and hidden units using contrastive divergence (CD-K)
 % hout contains a sample from the final model for each data example
 nepochs = params.nepochs;
 batchsize = params.batchsize;
@@ -37,16 +38,15 @@ for epoch=1:nepochs
     % E_model (use CD-K approximation)
     % initialize Gibbs chain from data
     h = double(rand(nh,batchsize) < p_h_data); % nh x batchsize
-    %hout = p_h_data; % data is probabilities
-    hout(:,first:last) = h;
+    hout = p_h_data; % data is probabilities (mean field)
+    %hout(:,first:last) = h;
     for k=1:params.CDk
       % sample visible given hidden
       p_v_h = 1./(1+exp(bsxfun(@plus,-w'*h,-bv))); % nv x batchsize
-      %v = p_v_h; % TODO using probabilities in place of states
-      v = double(rand(nv,batchsize) < p_v_h);
-      % sample hidden given visible TODO use probabilities--mean field(?)
+      v = p_v_h; % TODO using probabilities in place of states (mean field)
+      % v = double(rand(nv,batchsize) < p_v_h);
       p_h_v = 1./(1+exp(bsxfun(@plus,-w*v,-bh))); % nh x batchsize
-      %h = p_h_v; % TODO using probs in place of states
+      h = p_h_v; % TODO using probs in place of states (mean field)
     end
     Ew_model = (1/batchsize)*(h*v');
     Ebh_model = (1/batchsize)*sum(h,2);
@@ -68,5 +68,7 @@ for epoch=1:nepochs
     bh = bh + d_bh;
     bv = bv + d_bv;
     
+    
   end
+  fprintf(1, 'epoch %4i error %6.1f  \n', epoch, errsum); 
 end
